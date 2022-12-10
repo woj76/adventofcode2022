@@ -17,10 +17,10 @@ print("Part 2:")
 
 for d in data:
 	if d == 'noop':
-		c += 1
 		cc = c % 40
-		p = '#' if cc-2<=x<=cc else ' '
+		p = '#' if cc-1<=x<=cc+1 else ' '
 		print(p,end='')
+		c += 1
 		if c in cycles:
 			res += (c * x)
 		if c % 40 == 0:
@@ -28,14 +28,15 @@ for d in data:
 	else:
 		v = int(d.split()[1])
 		for _ in range(2):
-			c += 1
 			cc = c % 40
-			p = '#' if cc-2<=x<=cc else ' '
+			p = '#' if cc-1<=x<=cc+1 else ' '
 			print(p,end='')
+			c += 1
 			if c in cycles:
 				res += (c * x)
 			if c % 40 == 0:
 				print()
 		x += v
 
+print()
 print(f"Part 1: {res}")
