@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/snap/bin/pypy3
 
 f = open("../data/day11.txt","rt")
 input_data = f.read().strip()
