@@ -16,8 +16,6 @@ x = 0
 while plane[y][x] == ' ':
 	x += 1
 
-#assert plane[y][x] == '.' or plane[y][x] == '#'
-
 directions = [(1,0),(0,1),(-1,0),(0,-1)]
 dir = 0
 
