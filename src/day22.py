@@ -8,13 +8,19 @@ data = input_data.split('\n\n')
 
 part2 = True
 
-plane = data[0].split('\n')
+p = data[0].split('\n')
 moves = data[1].strip().replace('L',' L ').replace('R',' R ').split(' ')
 
-y = 0
-x = 0
-while plane[y][x] == ' ':
-	x += 1
+plane = {}
+
+x = y = None
+
+for yy,l in enumerate(p):
+	for xx,c in enumerate(l):
+		if c == '#' or c == '.':
+			if x == None and y == None:
+				x,y = xx,yy
+			plane[(xx,yy)] = c
 
 directions = [(1,0),(0,1),(-1,0),(0,-1)]
 dir = 0
@@ -95,37 +101,28 @@ def transfer(x,y,wall_id,dir):
 		assert x == 49 and 150<=y<200
 		return 50+(y%50),149
 
-for i in range(len(moves)):
-	m = moves[i]
+for m in moves:
 	if m == 'L':
 		dir = (dir-1) % len(directions)
 		continue
 	if m == 'R':
 		dir = (dir+1) % len(directions)
 		continue
-	steps = int(m)
-	dx,dy = directions[dir]
-	for _ in range(steps):
+	for _ in range(int(m)):
+		dx,dy = directions[dir]
 		nx,ny = x+dx,y+dy
 		if part2:
-			if ny < 0 or ny >= len(plane) or nx < 0 or nx >= len(plane[ny]) or plane[ny][nx] == ' ':
-				assert plane[y][x] == '.' or plane[y][x] == '#'
+			if (nx,ny) not in plane:
 				wall_id = id_wall(x,y)
 				nx,ny = transfer(x,y,wall_id,dir)
-				if plane[ny][nx] == '.':
+				if plane[(nx,ny)] == '.':
 					dir = change_dirs[(wall_id,dir)]
-					dx,dy = directions[dir]
 		else:
-			if ny < 0 or ny >= len(plane) or nx < 0 or nx >= len(plane[ny]) or plane[ny][nx] == ' ':
-				rdx,rdy = (-1*dx,-1*dy)
+			if (nx,ny) not in plane:
 				nx,ny = x,y
-				while True:
-					nx,ny = nx+rdx,ny+rdy
-					if ny < 0 or ny >= len(plane) or nx < 0 or nx >= len(plane[ny]) or plane[ny][nx] == ' ':
-						nx,ny=nx+dx,ny+dy
-						break
-			assert plane[ny][nx] == '#' or plane[ny][nx] == '.'
-		if plane[ny][nx] == '#':
+				while (nx-dx,ny-dy) in plane:
+					nx,ny = nx-dx,ny-dy
+		if plane[(nx,ny)] == '#':
 			break
 		x,y=nx,ny
 
