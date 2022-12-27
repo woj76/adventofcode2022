@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/snap/bin/pypy3
 
 from collections import defaultdict
 
@@ -73,60 +73,58 @@ distances = dist
 active_valves = act_val
 
 visited = {}
-max_pressure = float('-inf')
 
 total_time = 25 if part2 else 29
 
 all_valves = len(active_valves)
 
-def search_max1(curr_time, total_pressure, curr_valve, open_valves, producing_valves, second):
-	global max_pressure
+bestests = {}
 
+def search_max1(curr_time, total_pressure, curr_valve, open_valves):
 	if curr_time == total_time:
-		if second:
-			max_pressure = max(max_pressure, total_pressure)
-			return
-		else:
-			search_max1(0, total_pressure, mapping['AA'], open_valves, {}, True)
-			return
+		if open_valves not in bestests or bestests[open_valves] <= total_pressure:
+			bestests[open_valves] = total_pressure
+		return total_pressure
 
-	ovs = "".join(sorted(open_valves.keys()))
-	pvs = "".join(sorted(producing_valves.keys()))
-	s = chr(33+curr_time) + curr_valve + ovs + pvs
+	s = chr(33+curr_time) + curr_valve + open_valves
 	if s in visited and visited[s] >= total_pressure:
-		return
+		return float('-inf')
 	visited[s] = total_pressure
 
-	if len(open_valves.keys()) == all_valves:
+	if len(open_valves) == all_valves:
 		nt = total_pressure
-		for ov in producing_valves:
+		for ov in open_valves:
 			nt += (total_time-curr_time)*active_valves[ov]
-		search_max1(total_time, nt, curr_valve, open_valves, producing_valves, second)
-		return
+		return search_max1(total_time, nt, curr_valve, open_valves)
 
 	ext_time = 0
 	if curr_valve not in open_valves and curr_valve in active_valves:
-		producing_valves_copy = producing_valves.copy()
-		open_valves_copy = open_valves.copy()
-		open_valves_copy[curr_valve] = curr_time
-		producing_valves_copy[curr_valve] = True
+		open_valves = "".join(sorted(list(open_valves + curr_valve)))
 		ext_time = 1
-	else:
-		open_valves_copy = open_valves
-		producing_valves_copy = producing_valves
+	best = float('-inf')
 	for v,d in distances[curr_valve]:
 		if d == 0:
 			continue
 		if curr_time + d + ext_time >= total_time:
 			d = total_time - curr_time - ext_time
 		nt = total_pressure
-		for ov in producing_valves_copy:
+		for ov in open_valves:
 			nt += (d+ext_time)*active_valves[ov]
-		search_max1(curr_time+d+ext_time, nt, v, open_valves_copy, producing_valves_copy, second)
+		best = max(best, search_max1(curr_time+d+ext_time, nt, v, open_valves))
+	return best
+
+res = search_max1(0, 0, mapping['AA'], "")
 
 if part2:
-	search_max1(0,0,mapping['AA'],{},{},False)
-else:
-	search_max1(0,0,mapping['AA'],{},{},True)
+	max_pressure = float('-inf')
+	l = list(bestests.keys())
+	for i in range(len(l)):
+		for j in range(i+1,len(l)):
+			x,y = l[i],l[j]
+			if not [True for xy in x+y if xy in x and xy in y]:
+				p = bestests[x]+bestests[y]
+				if p > max_pressure:
+					max_pressure = p
+	res = max_pressure
 
-print(f"Part {2 if part2 else 1}: {max_pressure}")
+print(f"Part {2 if part2 else 1}: {res}")
