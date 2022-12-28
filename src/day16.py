@@ -82,7 +82,7 @@ bestests = {}
 
 def search_max1(curr_time, total_pressure, curr_valve, open_valves):
 	if curr_time == total_time:
-		if open_valves not in bestests or bestests[open_valves] <= total_pressure:
+		if part2 and (open_valves not in bestests or bestests[open_valves] <= total_pressure):
 			bestests[open_valves] = total_pressure
 		return total_pressure
 
