@@ -22,12 +22,14 @@ for d in data:
 total_time = (32 if part2 else 24)
 
 def search_max(blueprint,time,r_ore,r_clay,r_obsidian,r_goede,ore,clay,obsidian,goede):
-	key = (time,r_ore,r_clay,r_obsidian,r_goede,ore,clay,obsidian,goede)
+	# key = (time,r_ore,r_clay,r_obsidian,r_goede,ore,clay,obsidian,goede)
+	# For whatever reason it is OK to skip ore in DP look-up and still
+	# get the correct result (much faster)?
+	key = (time,r_ore,r_clay,r_obsidian,r_goede,clay,obsidian,goede)
 	rmax = -1
 	if key in visited and visited[key] >= goede:
 		return rmax
-	else:
-		visited[key] = goede
+	visited[key] = goede
 	if time == total_time:
 		return goede
 	time_left = total_time - time
